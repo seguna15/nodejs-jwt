@@ -19,6 +19,7 @@ model User {
   email String @unique
   password String
   Session Session[]
+  Blog Blog[]
 }
 
 //model for each user session
@@ -29,4 +30,15 @@ model Session {
   expiredAt DateTime
   user User @relation(fields: [userId], references: [id])
   userId Int
+}
+
+//model for blog
+model Blog{
+  id Int @id @default(autoincrement())
+  title String
+  body String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author User @relation(fields: [authorId], references: [id])
+  authorId Int
 }

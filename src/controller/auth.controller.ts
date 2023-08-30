@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { validationResult } from "express-validator";
-import * as AuthService from './auth.service';
+import * as AuthService from '../service/auth.service';
 import * as bcrypt from 'bcrypt';
 import {sign, verify} from 'jsonwebtoken';
 
@@ -33,6 +33,8 @@ export const createUser =  async (req: Request, res: Response) => {
 
 //login controller accepts username and password, then return our access and refresh token
 export const login = async( req: Request, res: Response) => {
+    const cookies = req.cookies;
+    
     const {email, password} = req.body;
 
     //get the user by email
@@ -46,14 +48,32 @@ export const login = async( req: Request, res: Response) => {
     
     //if the password does not match the user's password return an error
     if(!comparePassword) return res.status(403).send({message: 'unauthorized access'});
-  
     
+    //if we have cookies coming alongside the login delete it and clear even if you cannot delete still clear
+    if(cookies?.refreshToken)  {
+        const deletedCookie = AuthService.deleteSession(cookies.refreshToken);
+       
+        //clear even if cookie was not deleted from database
+        if (!deletedCookie) {
+            res.clearCookie("refreshToken", {
+              httpOnly: true,
+              maxAge: 0,
+            });
+        
+        }
+
+        // clwar cookies even if it has been deleted from the db
+        res.clearCookie("refreshToken", {
+          httpOnly: true,
+          maxAge: 0,
+        }); 
+    }
 
     const  refreshSecret: string = process.env.REFRESH_TOKEN_SECRET ?? '';
     
     //if refreshSecret is not available return error
     if(!refreshSecret) return res.status(403).send({message: 'unauthorized access'}); 
-   
+    
     //create refresh token
     const refreshToken  = sign(
         {
@@ -68,7 +88,7 @@ export const login = async( req: Request, res: Response) => {
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000
-    });
+    }); // add secure and samesite flag for production
 
     //creating the expiration date for the session
     const expiredAt = new Date();
@@ -91,13 +111,13 @@ export const login = async( req: Request, res: Response) => {
         const accessToken = sign(
             {userId: user.id},
             accessSecret,
-            {expiresIn: '30s'}
+            {expiresIn: '5m'}
         );
         
         res.status(200).json({accessToken});
     }catch(error: any){
-        return res.send(error.message);
-    }
+        return res.sendStatus(error.message);
+    } 
 
    
 }
@@ -139,7 +159,7 @@ export const refresh = async  (req: Request, res: Response) => {
         
         res.status(200).json({accessToken});
     } catch (error: any) {
-        return res.send(error.message);
+        return res.sendStatus(error.message);
     }
 }
 
@@ -151,7 +171,7 @@ export const logout = async (req: Request, res: Response) => {
             httpOnly: true,
             maxAge: 0
         }); 
-        return res.send({message: 'No token'});
+        return res.status(200).send({message: 'No token'});
     } 
      
     try {

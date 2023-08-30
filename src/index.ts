@@ -2,7 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
 import cors from 'cors'
-import { routes } from './auth/auth.router';
+import routes  from './routes/index.route';
 
 dotenv.config()
 
@@ -18,7 +18,7 @@ app.use(cors({
     origin: ['http://localhost:3000'],
     credentials: true
 }));
-routes(app);
+app.use('/api/v1', routes());
 
 //to generate random strings
 //console.log(require('crypto').randomBytes(64).toString('base64'));

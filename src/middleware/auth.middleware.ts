@@ -1,9 +1,9 @@
 //Middleware to validate access token
 import { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
-import * as AuthService from '../auth/auth.service';
+import * as AuthService from '../service/auth.service';
 
-const authenticateUser = async (req: Request, res: Response, next: NextFunction ) => {
+export const authenticateUser = async (req: Request, res: Response, next: NextFunction ) => {
     try {
         //get the access from authorization header
         const accessToken = req.header('Authorization')?.split(" ")[1] || "";
@@ -20,18 +20,16 @@ const authenticateUser = async (req: Request, res: Response, next: NextFunction 
         });
 
         //get the user by payload id, because our payload contains the user Id,
-        const user = await AuthService.getUserByID(payload.id);
-        if(!user) return res.send(401).send({
+        const user = await AuthService.getUserByID(payload.userId);
+        if(!user) return res.status(401).send({
             message: "unauthorized user"
         });
         //return the payload id and pass to the next function
-        res.locals.user = user;
+        res.locals.user = user.id;
         next();
     } catch (error: any) {
-        return res.send(401).send({
+        return res.status(401).send({
             message: "unauthorized user"
         });
     }
 }
-
-module.exports = authenticateUser;
