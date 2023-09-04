@@ -1,7 +1,7 @@
 //Middleware to validate access token
 import { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
-import * as AuthService from '../service/auth.service';
+import * as AuthService from '../auth/auth.service';
 
 export const authenticateUser = async (req: Request, res: Response, next: NextFunction ) => {
     try {

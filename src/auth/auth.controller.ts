@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { validationResult } from "express-validator";
-import * as AuthService from '../service/auth.service';
+import * as AuthService from './auth.service';
 import * as bcrypt from 'bcrypt';
 import {sign, verify} from 'jsonwebtoken';
 
@@ -116,7 +116,7 @@ export const login = async( req: Request, res: Response) => {
         
         res.status(200).json({accessToken});
     }catch(error: any){
-        return res.sendStatus(error.message);
+        return res.status(500).send(error.message);
     } 
 
    
@@ -128,7 +128,9 @@ export const refresh = async  (req: Request, res: Response) => {
     try {
         const refreshToken = req.cookies['refreshToken'];
 
-         const  refreshSecret: string = process.env.REFRESH_TOKEN_SECRET ?? '';
+        if(!refreshToken) return res.status(403).send({message: 'unauthorized access'});
+
+        const  refreshSecret: string = process.env.REFRESH_TOKEN_SECRET ?? '';
     
         //if refreshSecret is not available return error
         if(!refreshSecret) return res.status(403).send({message: 'unauthorized access'});
@@ -136,14 +138,14 @@ export const refresh = async  (req: Request, res: Response) => {
 
         //if payload does not exist user is unauthorized
         if(!payload) return res.status(401).send({
-            message: 'unauthorized user'
+            message: 'unauthenticated user'
         });
 
         //get token from db
         const dbToken = await AuthService.getToken(payload.id);
 
         //check if db token exist
-        if(!dbToken) return res.status(401).send({massage: 'Unauthorized'});
+        if(!dbToken) return res.status(401).send({massage: 'Unauthenticated user'});
 
         const  accessSecret: string = process.env.ACCESS_TOKEN_SECRET ?? '';
         
@@ -154,12 +156,12 @@ export const refresh = async  (req: Request, res: Response) => {
         const accessToken = sign(
             {userId: payload.id},
             accessSecret,
-            {expiresIn: '30s'}
+            {expiresIn: '5m'}
         );
         
         res.status(200).json({accessToken});
     } catch (error: any) {
-        return res.sendStatus(error.message);
+        return res.status(500).send(error.message);
     }
 }
 
@@ -182,10 +184,13 @@ export const logout = async (req: Request, res: Response) => {
             maxAge: 0
         }); 
 
-        res.clearCookie('refreshToken'); 
-        return res.sendStatus(204); //204 no content 
+        res.clearCookie("refreshToken", {
+          httpOnly: true,
+          maxAge: 0,
+        }); 
+        return res.status(204).send({message: 'Logged out'}); //204 no content 
     } catch (error: any) {
-        return res.send(error.message)
+        return res.status(500).send(error.message)
     }
 
 }

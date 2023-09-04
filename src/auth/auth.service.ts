@@ -1,3 +1,4 @@
+import { Role } from "@prisma/client";
 import { db } from "../utils/db.utils";
 import * as bcrypt from 'bcrypt';
 
@@ -7,6 +8,7 @@ export type User = {
     username: string,
     email: string,
     password: string,
+    role: Role,
 }
 
 //session type definition
@@ -19,8 +21,8 @@ export type Session = {
 //this function returns the promise of type User,
     //we are omitting user id as it will be generated automatically.
     //we are also omitting password on the return type because we do not want to return the user's password
-export const createUser = async (user: Omit<User, 'id'>): Promise<Omit<User, 'password'>> => {
-    const {username, email, password} = user;
+export const createUser = async (user: Omit<User, 'id'>): Promise<Omit<User, 'password'|'role'>> => {
+    const {username, email, password, role} = user;
 
     const hashPassword = await bcrypt.hash(password, 12);
 
@@ -30,6 +32,7 @@ export const createUser = async (user: Omit<User, 'id'>): Promise<Omit<User, 'pa
             username,
             email,
             password: hashPassword,
+            role
         },
         select: {
             id: true,
