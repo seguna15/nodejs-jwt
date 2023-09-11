@@ -46,3 +46,10 @@ export const createBlog = async(req: Request, res: Response ) => {
 
   return res.status(201).json({message: "Blog post was created successfully"});
 }
+
+
+//Edit Blog Posts
+export const updateBlog = async (req: Request, res: Response) => {
+  const {id} = req.params;
+  if(!id) return res.status(400).json({message: "blog post id not found"});
+}
