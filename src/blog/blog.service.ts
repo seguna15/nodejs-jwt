@@ -1,10 +1,16 @@
 import { db } from "../utils/db.utils";
 import { Blog } from "./types/blog.type";
 
-//getting all blogposts 
-export const getBlogs = async () => {
+//getting all blog posts 
+export const getBlogs = async (authorId?: number) => {
     try {
-        const result = await db.blog.findMany();
+        const result = authorId
+          ? await db.blog.findMany({
+              where: {
+                authorId,
+              },
+            })
+          : await db.blog.findMany();
         return result
     } catch (error: any) {
         return error.message
@@ -37,6 +43,43 @@ export const createBlog = async (blog: Omit<Blog, "id">) => {
                 authorId
             },
         })
+        return result;
+    } catch (error) {
+        return error;
+    }
+}
+
+//service method to edit Blog post 
+export const editBlog = async (blog: Blog) => {
+    //destructuring blog object;
+    const { id, title, body, authorId } = blog;
+    
+    try {
+        const result = await db.blog.update({
+            data: {
+                title,
+                body,
+            },
+            where: {
+                id,
+                authorId
+            }
+        });
+        return result;
+    } catch (error) {
+        return error;
+    }
+}
+
+//service method to delete Blog post
+export const deleteBlog = async (id: number, authorId: number) => {
+    try {
+        const result = await db.blog.delete({
+            where: {
+                id,
+                authorId
+            }
+        });
         return result;
     } catch (error) {
         return error;

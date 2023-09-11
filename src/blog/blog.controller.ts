@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
 import * as BlogService from "./blog.service";
+import { Blog } from "./types/blog.type";
 
 //get all the blog posts
 export const getAllBlogs = async(req: Request, res: Response) => {
-  const blogs = await BlogService.getBlogs();
+  const author = req.query.author;
+  const authorId: number = typeof author === "string" ? parseInt(author, 10) : 0;
 
-  if(!blogs) return res.status(404).json({message: "Blog not found"})
+  const blogs = author
+    ? await BlogService.getBlogs(authorId)
+    : await BlogService.getBlogs();
+
+  if (!blogs) return res.status(404).json({ message: "Blog not found" });
   return res.status(200).send(blogs);
 };
 
@@ -22,7 +28,6 @@ export const getBlogById  = async (req: Request, res: Response) => {
 
   return res.status(200).send(blog);
 }
-
 
 //this is a controller method to create blog post
 export const createBlog = async(req: Request, res: Response ) => {
@@ -44,12 +49,51 @@ export const createBlog = async(req: Request, res: Response ) => {
 
   if(!result) return  res.status(400).json({message: "Blog post could not be created"});
 
-  return res.status(201).json({message: "Blog post was created successfully"});
+  return res.status(201).send(result);
 }
 
 
 //Edit Blog Posts
 export const updateBlog = async (req: Request, res: Response) => {
-  const {id} = req.params;
+  //Id will be gotten from the url
+  const id = parseInt(req.params.id);
   if(!id) return res.status(400).json({message: "blog post id not found"});
+
+  //authorId's value will be supplied by the isAdmin middleware.
+  const authorId = res.locals.id;
+  if(!authorId) return res.status(403).json({message: "User is forbidden"});
+
+  const {title, body, } = req.body;
+  if(!title || !body) return res.status(400).json({message: "Blog post should have body and title"});
+  
+  //creating a blog object to pass to the service
+  const blog: Blog = {
+    id,
+    title,
+    body,
+    authorId,
+  }
+  const updatedBlog = await BlogService.editBlog(blog);
+
+  if(!updatedBlog) return res.status(400).json({message: "Blog post could not be updated"}); 
+
+  return res.status(201).send(updatedBlog);
+}
+
+//Controller method to delete blog post
+export const deleteBlog = async (req: Request, res: Response) => {
+  //Id will be gotten from the url
+  const id = parseInt(req.params.id);
+  if (!id) return res.status(400).json({ message: "blog post id not found" });
+
+  //authorId's value will be supplied by the isAdmin middleware.
+  const authorId = res.locals.id;
+  if (!authorId) return res.status(403).json({ message: "User is forbidden" });
+
+  //call on the service method to delete the blog post
+  const deletedBlog = await BlogService.deleteBlog(id, authorId);
+  
+  if(!deletedBlog) return res.status(404).json({message: "Blog post not found"});
+
+  return res.status(200).send(deletedBlog);
 }
