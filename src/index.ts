@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import cors from 'cors'
 import authRoute  from './auth/auth.router';
 import blogRouter from './blog/blog.router';
+import commentRouter from './comment/comment.router';
 
 dotenv.config()
 
@@ -23,6 +24,7 @@ app.use(cors({
 
 app.use(`${API_URL}/auth`, authRoute());
 app.use(`${API_URL}/blogs`, blogRouter());
+app.use(`${API_URL}/comments`, commentRouter());
 
 //to generate random strings
 //console.log(require('crypto').randomBytes(64).toString('base64'));
