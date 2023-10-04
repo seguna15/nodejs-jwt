@@ -5,6 +5,7 @@ import cors from 'cors'
 import authRoute  from './auth/auth.router';
 import blogRouter from './blog/blog.router';
 import commentRouter from './comment/comment.router';
+import userRouter from './user/user.router';
 
 dotenv.config()
 
@@ -18,11 +19,12 @@ const app = express();
 app.use(express.json())
 app.use(cookieParser());
 app.use(cors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:5173', 'http://localhost:3000'],
     credentials: true
 }));
 
 app.use(`${API_URL}/auth`, authRoute());
+app.use(`${API_URL}/users`, userRouter())
 app.use(`${API_URL}/blogs`, blogRouter());
 app.use(`${API_URL}/comments`, commentRouter());
 
