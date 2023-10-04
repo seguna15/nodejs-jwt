@@ -1,15 +1,17 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import {FaEye, FaEyeSlash} from "react-icons/fa";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { API_ROUTE } from '../../Server';
 
-const SignupPage = () => {
+const SignUpPage = () => {
     // State variable for our form data;
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
+    const navigate = useNavigate();
 
     // state variable to handle show or hide password
     const [visible, setVisible] = useState(false);
@@ -20,14 +22,16 @@ const SignupPage = () => {
         try {
           setLoading(true);
              const res = await axios.post(
-               "http://localhost:8000/api/v1/auth/register",
+               `${API_ROUTE}/auth/register`,
                { username, email, password, role: "USER" }
              );
              console.log(res.data);
              setLoading(false);
              setError(false);
+             navigate("/signin");
         } catch (error) {
             console.log(error);
+            setLoading(false);
             setError(true);
         }
        
@@ -38,7 +42,7 @@ const SignupPage = () => {
     <main className="mt-5">
       <section className="p-3 max-w-lg mx-auto">
         <h1 className="text-3xl text-center font-semibold">Sign Up</h1>
-        {error ? <p className='text-red-600 text-center my-5'></p> : null }
+        {error ? <p className='text-red-600 text-center my-5'>Something went wrong</p> : null }
         <form className="flex flex-col gap-4" onSubmit={handleSignUp}>
           <div className="flex flex-col gap-2">
             <label
@@ -112,4 +116,4 @@ const SignupPage = () => {
   );
 }
 
-export default SignupPage;
+export default SignUpPage;
