@@ -20,6 +20,7 @@ const SignInPage = () => {
       //withCredential will allow you send back the cookies.
       const res = await axios.post(`${API_ROUTE}/auth/login`,{email,password},{withCredentials: true});
       const data = res.data;
+      localStorage.setItem("auth", true);
       axios.defaults.headers.common["Authorization"] = `Bearer ${data["accessToken"]}`; 
       setLoading(false);
       setError(false);

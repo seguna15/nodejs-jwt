@@ -137,15 +137,15 @@ export const refresh = async  (req: Request, res: Response) => {
         const payload: any = verify(refreshToken, refreshSecret);
 
         //if payload does not exist user is unauthorized
-        if(!payload) return res.status(401).send({
-            message: 'unauthenticated user'
+        if(!payload) return res.status(403).send({
+            message: 'Unauthorized user'
         });
 
         //get token from db
         const dbToken = await AuthService.getToken(payload.id);
 
         //check if db token exist
-        if(!dbToken) return res.status(401).send({massage: 'Unauthenticated user'});
+        if(!dbToken) return res.status(403).send({message: 'Unauthorized user'});
 
         const  accessSecret: string = process.env.ACCESS_TOKEN_SECRET ?? '';
         
@@ -156,7 +156,7 @@ export const refresh = async  (req: Request, res: Response) => {
         const accessToken = sign(
             {userId: payload.id},
             accessSecret,
-            {expiresIn: '5m'}
+            {expiresIn: '1m'}
         );
         
         res.status(200).json({accessToken});
@@ -165,6 +165,7 @@ export const refresh = async  (req: Request, res: Response) => {
     }
 }
 
+//Logout
 export const logout = async (req: Request, res: Response) => {
     const refreshToken = req.cookies['refreshToken'];
 
@@ -183,7 +184,7 @@ export const logout = async (req: Request, res: Response) => {
             httpOnly: true,
             maxAge: 0
         }); 
-
+        
         res.clearCookie("refreshToken", {
           httpOnly: true,
           maxAge: 0,

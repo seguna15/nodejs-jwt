@@ -4,7 +4,8 @@
   "description": "JWT with access and refresh token using typescript",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.ts"
+    "start": "node src/index.ts",
+    "dev": "nodemon src/index.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.1.1",

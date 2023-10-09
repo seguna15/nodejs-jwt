@@ -1,8 +1,23 @@
-import React from 'react'
+import axios from 'axios';
+import React, { useState } from 'react'
 import { FaSearch } from 'react-icons/fa';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { API_ROUTE } from '../../Server';
 
 const Header = () => {
+  const [auth, setAuth] = useState(localStorage.getItem("auth"));
+  const navigate = useNavigate();
+  const handleLogout = async(e) => {
+    e.preventDefault()
+
+    try {
+      await axios.post(`${API_ROUTE}/auth/logout`, {}, { withCredentials: true });
+      localStorage.removeItem("auth");
+      navigate('/signin');
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <header className="bg-slate-200">
       <div className=" flex flex-col md:flex-row justify-between items-center max-w-6xl mx-auto p-3">
@@ -17,13 +32,27 @@ const Header = () => {
               name=""
               id=""
               className="bg-slate-100 rounded-sm pl-2 focus:bg-slate-50 w-[300px] max-w-xs"
-              placeholder='search blog'
+              placeholder="search blog"
             />
-            <FaSearch size={16} className='absolute top-1 right-1 text-gray-500'/>
+            <FaSearch
+              size={16}
+              className="absolute top-1 right-1 text-gray-500"
+            />
           </div>
-          <li>
-            <Link to="/signin">Sign In</Link>
-          </li>
+          {auth ? (
+            <>
+              <li>
+                <Link to="/create-blog">Create</Link>
+              </li>
+              <li>
+                <Link onClick={handleLogout}>Logout</Link>
+              </li>
+            </>
+          ) : (
+            <li>
+              <Link to="/signin">Sign In</Link>
+            </li>
+          )}
         </ul>
       </div>
     </header>
