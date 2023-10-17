@@ -4,6 +4,7 @@ import { verify } from "jsonwebtoken";
 import * as AuthService from '../auth/auth.service';
 
 export const authenticateUser = async (req: Request, res: Response, next: NextFunction ) => {
+    
     try {
         //get the access from authorization header
         const accessToken = req.header('Authorization')?.split(" ")[1] || "";

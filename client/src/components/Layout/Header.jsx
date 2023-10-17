@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { FaSearch } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom'
-import { API_ROUTE } from '../../Server';
+
 
 const Header = () => {
   const [auth, setAuth] = useState(localStorage.getItem("auth"));
@@ -11,7 +11,7 @@ const Header = () => {
     e.preventDefault()
 
     try {
-      await axios.post(`${API_ROUTE}/auth/logout`, {}, { withCredentials: true });
+      await axios.post('auth/logout', {}, { withCredentials: true });
       localStorage.removeItem("auth");
       navigate('/signin');
     } catch (error) {

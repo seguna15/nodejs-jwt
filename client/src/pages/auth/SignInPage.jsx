@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import { API_ROUTE } from '../../Server';
+
 import axios from 'axios';
 
 const SignInPage = () => {
@@ -18,10 +18,12 @@ const SignInPage = () => {
     try {
       setLoading(true);
       //withCredential will allow you send back the cookies.
-      const res = await axios.post(`${API_ROUTE}/auth/login`,{email,password},{withCredentials: true});
+      const res = await axios.post("auth/login",{email,password},{withCredentials: true});
       const data = res.data;
-      localStorage.setItem("auth", true);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${data["accessToken"]}`; 
+      localStorage.setItem("auth", JSON.stringify({
+        loggedIn: true,
+        token: data.accessToken,
+      }) );
       setLoading(false);
       setError(false);
       navigate("/")

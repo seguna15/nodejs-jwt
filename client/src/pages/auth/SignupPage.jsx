@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import {FaEye, FaEyeSlash} from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
-import { API_ROUTE } from '../../Server';
 
 const SignUpPage = () => {
     // State variable for our form data;
@@ -22,15 +21,15 @@ const SignUpPage = () => {
         try {
           setLoading(true);
              const res = await axios.post(
-               `${API_ROUTE}/auth/register`,
+               "auth/register",
                { username, email, password, role: "USER" }
              );
-             console.log(res.data);
+             
              setLoading(false);
              setError(false);
              navigate("/signin");
         } catch (error) {
-            console.log(error);
+          
             setLoading(false);
             setError(true);
         }
