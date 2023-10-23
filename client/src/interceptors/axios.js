@@ -25,8 +25,14 @@ axios.interceptors.response.use(
             const response = await axios.post('/auth/refresh', {}, {withCredentials: true});
 
             if(response.status === 200) {
+                localStorage.setItem(
+                  "auth",
+                  JSON.stringify({
+                    loggedIn: true,
+                    token:response.data.accessToken
+                  })
+                );
                 
-                localStorage.setItem("auth", {...loggedIn, token: response.data.accessToken});
                 prevRequest.headers["Authorization"] = `Bearer ${response.data["accessToken"]}`;
                 return axios(prevRequest);
             }
