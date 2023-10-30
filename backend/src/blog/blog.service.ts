@@ -23,6 +23,15 @@ export const getById = async (id: number) => {
         const result = await db.blog.findUnique({
             where: {
                 id
+            },
+            include: {
+               author: {
+                select: {
+                    username: true,
+                    email: true,
+                }
+               },
+
             }
         })
         return result;
