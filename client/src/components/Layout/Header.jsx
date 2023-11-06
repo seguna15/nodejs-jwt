@@ -22,7 +22,7 @@ const Header = () => {
     <header className="bg-slate-200">
       <div className=" flex flex-col md:flex-row justify-between items-center max-w-6xl mx-auto p-3">
         <h1 className="font-bold">Blog App</h1>
-        <ul className="flex gap-4 align-bottom">
+        <ul className="flex flex-col md:flex-row gap-4 align-bottom">
           <li>
             <Link to="/">Home</Link>
           </li>
@@ -43,6 +43,9 @@ const Header = () => {
             <>
               <li>
                 <Link to="/create-blog">Create</Link>
+              </li>
+              <li>
+                <Link to="/admin/blogs">Admin</Link>
               </li>
               <li>
                 <Link onClick={handleLogout}>Logout</Link>

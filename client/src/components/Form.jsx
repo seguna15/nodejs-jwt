@@ -1,13 +1,14 @@
 import React from 'react'
 
-const Form = ({ setTitle, setBody, buttonTitle, handlerFunction }) => {
+const Form = ({ title, setTitle, body, setBody, buttonTitle, handlerFunction }) => {
+  
   return (
     <main>
       <section className="mt-5 max-w-3xl mx-auto">
-        <h1 className="text-gray-600 capitalize text-3xl font-bold text-center">
+        <h1 className="text-gray-600 capitalize text-3xl font-bold px-4 mb-5">
           create blog post
         </h1>
-        <form action="" className="flex flex-col gap-4" onSubmit={handlerFunction}>
+        <form action="" className="flex flex-col gap-4 px-4" onSubmit={handlerFunction}>
           <div className="">
             <label
               htmlFor="large-input"
@@ -20,6 +21,7 @@ const Form = ({ setTitle, setBody, buttonTitle, handlerFunction }) => {
               id="large-input"
               className="block w-full p-3 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-md focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setTitle(e.target.value)}
+              value={title}
             />
           </div>
           <div>
@@ -35,6 +37,7 @@ const Form = ({ setTitle, setBody, buttonTitle, handlerFunction }) => {
               className="block p-2.5 h-[300px] w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Write your thoughts here..."
               onChange={(e) => setBody(e.target.value)}
+              value={body}
             ></textarea>
           </div>
           <button
