@@ -25,8 +25,17 @@ export const fetchAllComments = async (blogId: number) => {
           where: {
             blogId,
           },
+          include: {
+            user:{
+                select: {
+                    username: true
+                }
+            } 
+          }
         });
 
+
+       
         return comments;
     } catch (error: any) {
         return error.message;

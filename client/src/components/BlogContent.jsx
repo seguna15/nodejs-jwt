@@ -3,6 +3,7 @@ import  { STATUS } from '../Status';
 import axios from "axios";
 import moment from "moment";
 
+
 const BlogContent = ({id}) => {
 
     const [blog, setBlog] = useState({})
@@ -14,11 +15,9 @@ const BlogContent = ({id}) => {
         setStatus(STATUS.LOADING)
         try {
           const res = await axios.get(`/blogs/${id}, {withCredentials: true}`);
-          console.log(res.data);
           setBlog(res.data);
           setStatus(STATUS.SUCCESSFUL)
         } catch (error) {
-          console.log(error);
           setError(error.response.data.message || error.message);
           setStatus(STATUS.ERROR);
         }
@@ -33,9 +32,6 @@ const BlogContent = ({id}) => {
       isError: status === STATUS.ERROR,
     }
 
-    
-console.log(statusObj);
-console.log(error);
 
   return (
     <>
@@ -51,6 +47,9 @@ console.log(error);
       {statusObj.isSuccessful && (
         <>
           <header className="mb-4 lg:mb-6 not-format">
+            <h1 className="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl ">
+              {blog.title}
+            </h1>
             <address className="flex items-center mb-6 not-italic">
               <div className="inline-flex items-center mr-3 text-sm text-gray-900 ">
                 <div>
@@ -70,14 +69,9 @@ console.log(error);
                 </div>
               </div>
             </address>
-            <h1 className="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl ">
-              {blog.title}
-            </h1>
           </header>
           <section>
-            <p className="lead">
-              {blog.body}
-            </p>
+            <p className="lead">{blog.body}</p>
           </section>
         </>
       )}
